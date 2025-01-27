@@ -30,7 +30,20 @@ class EventConsumer {
     )
     fun consumeRawEvent(customer: Customer?) {
         customer?.let {
+            if (customer.name.isBlank()) {
+                throw RuntimeException("Invalid customer data, retrying...")
+            }
             log.info("EventConsumer::consumeRawEvent consumed events {}", objectMapper.writeValueAsString(it))
         } ?: log.warn("Received null customer event")
     }
+
+    @PulsarListener(
+        topics = ["jt-raw-topic-dlq"],
+        subscriptionName = "my-subscription-dlq",
+        schemaType = SchemaType.JSON
+    )
+    fun handleDeadLetterEvent(customer: Customer?) {
+        log.error("EventConsumer::handleDeadLetterEvent received dead-letter event: {}", customer)
+    }
+
 }

@@ -11,6 +11,10 @@ spring:
     consumer:
       subscription:
         name: my-subscription
+      dead-letter-policy:
+        max-redeliver-count: 3
+        retry-letter-topic: jt-raw-topic-retry
+        dead-letter-topic: jt-raw-topic-dlq
     defaults:
       type-mappings:
         - messageType: com.personal.crud_pulsar.Customer
